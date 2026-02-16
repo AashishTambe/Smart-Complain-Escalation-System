@@ -1,109 +1,89 @@
 package com.complaintsystem.dao;
 
-import com.complaintsystem.model.Department;
+import com.complaintsystem.config.DBConnection;
 import com.complaintsystem.model.User;
-import com.complaintsystem.util.DBConnection;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDAO {
 
-    public User save(User user) {
-        String sql = "INSERT INTO users (name, email, password, role, department_id, active) VALUES (?, ?, ?, ?, ?, ?)";
-        // If id exists, it's an update (not fully implemented here as save usually implies create or update)
-        // For now handling create only for registration
-        
+    public User findByEmailAndPassword(String email, String password) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND active = 1";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
-            stmt.setString(4, user.getRole());
-            if (user.getDepartment() != null) {
-                stmt.setInt(5, user.getDepartment().getId());
-            } else {
-                stmt.setNull(5, Types.INTEGER);
-            }
-            stmt.setBoolean(6, user.isActive());
-
-            int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Creating user failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    user.setId(generatedKeys.getInt(1));
-                } else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return user;
-    }
-
-    public Optional<User> findByEmail(String email) {
-        String sql = "SELECT u.*, d.name as dept_name FROM users u " +
-                     "LEFT JOIN departments d ON u.department_id = d.id " +
-                     "WHERE u.email = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, email);
-            try (ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password); // for demo only; use hashing in production
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(mapRowToUser(rs));
+                    return mapRow(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return Optional.empty();
+        return null;
     }
-    
-    public Optional<User> findById(int id) {
-        String sql = "SELECT u.*, d.name as dept_name FROM users u " +
-                     "LEFT JOIN departments d ON u.department_id = d.id " +
-                     "WHERE u.id = ?";
+
+    public User findByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(mapRowToUser(rs));
+                    return mapRow(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return Optional.empty();
+        return null;
     }
 
-    private User mapRowToUser(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getInt("id"));
-        user.setName(rs.getString("name"));
-        user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setRole(rs.getString("role"));
-        user.setActive(rs.getBoolean("active"));
+    public User findById(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        }
+        return null;
+    }
 
+    private User mapRow(ResultSet rs) throws SQLException {
+        User u = new User();
+        u.setId(rs.getInt("id"));
+        u.setName(rs.getString("name"));
+        u.setEmail(rs.getString("email"));
+        u.setPassword(rs.getString("password"));
+        u.setRole(rs.getString("role"));
         int deptId = rs.getInt("department_id");
-        if (!rs.wasNull()) {
-            Department dept = new Department();
-            dept.setId(deptId);
-            dept.setName(rs.getString("dept_name"));
-            user.setDepartment(dept);
+        u.setDepartmentId(rs.wasNull() ? null : deptId);
+        u.setActive(rs.getBoolean("active"));
+        return u;
+    }
+
+    public void createUser(User user) throws SQLException {
+        String sql = "INSERT INTO users (name, email, password, role, active) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getRole()); // Default to 'USER' or as set
+            ps.setBoolean(5, user.isActive()); // Default to true or as set
+            
+            ps.executeUpdate();
+            
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    user.setId(rs.getInt(1));
+                }
+            }
         }
-        return user;
     }
 }
+

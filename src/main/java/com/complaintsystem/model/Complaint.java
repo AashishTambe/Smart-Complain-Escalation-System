@@ -4,16 +4,20 @@ import java.util.Date;
 
 public class Complaint {
     private int id;
-    private User user;
-    private ComplaintCategory category;
+    private int userId;
+    private int categoryId;
     private String title;
     private String description;
     private String priority;      // LOW / MEDIUM / HIGH
-    private String status = "OPEN";        // OPEN / IN_PROGRESS / ESCALATED / RESOLVED / CLOSED
-    private int currentLevel = 1;
-    private User assignedTo;
+    private String status;        // OPEN / IN_PROGRESS / ESCALATED / RESOLVED / CLOSED
+    private int currentLevel;
+    private Integer assignedTo;
     private Date createdAt;
     private Date lastStatusChange;
+
+    // Extra view fields (not always populated)
+    private String categoryName;
+    private String assignedToName;
 
     public int getId() {
         return id;
@@ -23,20 +27,20 @@ public class Complaint {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public ComplaintCategory getCategory() {
-        return category;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(ComplaintCategory category) {
-        this.category = category;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getTitle() {
@@ -79,11 +83,11 @@ public class Complaint {
         this.currentLevel = currentLevel;
     }
 
-    public User getAssignedTo() {
+    public Integer getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(User assignedTo) {
+    public void setAssignedTo(Integer assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -103,13 +107,20 @@ public class Complaint {
         this.lastStatusChange = lastStatusChange;
     }
 
-    // Computed properties for JSPs
     public String getCategoryName() {
-        return category != null ? category.getName() : null;
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getAssignedToName() {
-        return assignedTo != null ? assignedTo.getName() : null;
+        return assignedToName;
+    }
+
+    public void setAssignedToName(String assignedToName) {
+        this.assignedToName = assignedToName;
     }
 }
 

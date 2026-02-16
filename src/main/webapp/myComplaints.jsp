@@ -42,9 +42,9 @@
                 </li>
                 <% if ("ADMIN".equals(userRole)) { %>
                 <li class="sidebar__item">
-                    <a href="adminDashboard" class="sidebar__link">
+                    <a href="staffDashboard" class="sidebar__link">
                         <span class="sidebar__link-icon">⚙️</span>
-                        <span>Admin Dashboard</span>
+                        <span>All Complaints</span>
                     </a>
                 </li>
                 <% } %>
@@ -70,16 +70,20 @@
 
         <div class="app-content">
             <div class="flex-between" style="margin-bottom: 20px;">
-                <h2 style="margin: 0;">My Complaints</h2>
+                <h2 style="margin: 0;"><%= "USER".equals(userRole) ? "My Complaints" : "Assigned Complaints" %></h2>
+                <% if ("USER".equals(userRole)) { %>
                 <a href="registerComplaint.jsp" class="btn btn--primary">➕ Register New Complaint</a>
+                <% } %>
             </div>
 
             <% if (complaints == null || complaints.isEmpty()) { %>
             <div class="card">
                 <p style="text-align: center; color: var(--color-text-muted);">
-                    You haven't registered any complaints yet.
+                    <%= "USER".equals(userRole) ? "You haven't registered any complaints yet." : "No complaints assigned to you." %>
                     <br/>
+                    <% if ("USER".equals(userRole)) { %>
                     <a href="registerComplaint.jsp" class="btn btn--primary" style="margin-top: 12px;">Register Your First Complaint</a>
+                    <% } %>
                 </p>
             </div>
             <% } else { %>
@@ -95,6 +99,9 @@
                             <th>Level</th>
                             <th>Assigned To</th>
                             <th>Created At</th>
+                            <% if (!"USER".equals(userRole)) { %>
+                            <th>Actions</th>
+                            <% } %>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,6 +122,20 @@
                             <td>L<%= c.getCurrentLevel() %></td>
                             <td><%= c.getAssignedToName() != null ? c.getAssignedToName() : "-" %></td>
                             <td><%= c.getCreatedAt() != null ? c.getCreatedAt() : "-" %></td>
+                            <% if (!"USER".equals(userRole)) { %>
+                            <td>
+                                <form action="updateStatus" method="post" class="complaint-actions">
+                                    <input type="hidden" name="complaintId" value="<%= c.getId() %>" />
+                                    <select name="status" class="form-select" style="width: auto; padding: 4px 8px; font-size: 12px;">
+                                        <option value="OPEN" <%= "OPEN".equals(c.getStatus()) ? "selected" : "" %>>OPEN</option>
+                                        <option value="IN_PROGRESS" <%= "IN_PROGRESS".equals(c.getStatus()) ? "selected" : "" %>>IN_PROGRESS</option>
+                                        <option value="RESOLVED" <%= "RESOLVED".equals(c.getStatus()) ? "selected" : "" %>>RESOLVED</option>
+                                        <option value="CLOSED" <%= "CLOSED".equals(c.getStatus()) ? "selected" : "" %>>CLOSED</option>
+                                    </select>
+                                    <button type="submit" class="btn btn--primary btn--sm">Update</button>
+                                </form>
+                            </td>
+                            <% } %>
                         </tr>
                         <% } %>
                     </tbody>

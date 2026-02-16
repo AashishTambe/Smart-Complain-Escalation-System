@@ -1,52 +1,31 @@
 package com.complaintsystem.dao;
 
+import com.complaintsystem.config.DBConnection;
 import com.complaintsystem.model.Department;
-import com.complaintsystem.util.DBConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class DepartmentDAO {
 
-    public List<Department> findAll() {
-        List<Department> departments = new ArrayList<>();
-        String sql = "SELECT * FROM departments";
-
+    public List<Department> findAll() throws SQLException {
+        List<Department> list = new ArrayList<>();
+        String sql = "SELECT * FROM departments ORDER BY name";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Department dept = new Department();
-                dept.setId(rs.getInt("id"));
-                dept.setName(rs.getString("name"));
-                departments.add(dept);
+                Department d = new Department();
+                d.setId(rs.getInt("id"));
+                d.setName(rs.getString("name"));
+                list.add(d);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return departments;
-    }
-
-    public Optional<Department> findById(int id) {
-        String sql = "SELECT * FROM departments WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Department dept = new Department();
-                    dept.setId(rs.getInt("id"));
-                    dept.setName(rs.getString("name"));
-                    return Optional.of(dept);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Optional.empty();
+        return list;
     }
 }
+

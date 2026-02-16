@@ -42,9 +42,9 @@
                                     </li>
                                     <% if ("ADMIN".equals(userRole)) { %>
                                         <li class="sidebar__item">
-                                            <a href="adminDashboard" class="sidebar__link">
+                                            <a href="staffDashboard" class="sidebar__link">
                                                 <span class="sidebar__link-icon">⚙️</span>
-                                                <span>Admin Dashboard</span>
+                                                <span>All Complaints</span>
                                             </a>
                                         </li>
                                         <% } %>

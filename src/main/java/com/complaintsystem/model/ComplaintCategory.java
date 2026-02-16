@@ -3,12 +3,8 @@ package com.complaintsystem.model;
 public class ComplaintCategory {
     private int id;
     private String name;
-    private Department department;
+    private int departmentId;
 
-    // Transient field/method for backward compatibility if needed, 
-    // but better to access via department object.
-    // For now we expose getDepartmentId() for easier migration without breaking JSP logic immediately if used.
-    
     public int getId() {
         return id;
     }
@@ -25,12 +21,12 @@ public class ComplaintCategory {
         this.name = name;
     }
 
-    public Department getDepartment() {
-        return department;
+    public int getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 }
 

@@ -9,6 +9,8 @@
     String statusFilter = request.getParameter("status");
     String priorityFilter = request.getParameter("priority");
     String deptFilter = request.getParameter("departmentId");
+    String currentView = (String) request.getAttribute("currentView");
+    if (currentView == null) currentView = "all";
 %>
 <html>
 <head>
@@ -65,11 +67,19 @@
         </nav>
 
         <div class="app-content">
-            <h2 style="margin-top: 0;">Complaint Management</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Complaint Management</h2>
+                <div style="display: flex; gap: 10px;">
+                    <a href="adminDashboard?view=all" class="btn <%= "all".equals(currentView) ? "btn--primary" : "btn--secondary" %>">All Complaints</a>
+                    <a href="adminDashboard?view=assigned" class="btn <%= "assigned".equals(currentView) ? "btn--primary" : "btn--secondary" %>">My Assigned</a>
+                </div>
+            </div>
 
-            <!-- Filter Form -->
+            <% if ("all".equals(currentView)) { %>
+            <!-- Filter Form (only for "all" view) -->
             <div class="card" style="margin-bottom: 20px;">
                 <form method="get" action="adminDashboard" class="d-flex" style="flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                    <input type="hidden" name="view" value="all" />
                     <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">
@@ -108,6 +118,7 @@
                     <button type="submit" class="btn btn--primary">🔍 Filter</button>
                 </form>
             </div>
+            <% } %>
 
             <!-- Complaints Table -->
             <% if (complaints == null || complaints.isEmpty()) { %>

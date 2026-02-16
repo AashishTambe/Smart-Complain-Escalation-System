@@ -6,8 +6,8 @@ public class User {
     private String email;
     private String password;
     private String role;        // USER, OFFICER_L1, OFFICER_L2, ADMIN
-    private Department department;
-    private boolean active = true;
+    private Integer departmentId;
+    private boolean active;
 
     public int getId() {
         return id;
@@ -49,12 +49,12 @@ public class User {
         this.role = role;
     }
 
-    public Department getDepartment() {
-        return department;
+    public Integer getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentId(Integer departmentId) {
+        this.departmentId = departmentId;
     }
 
     public boolean isActive() {
