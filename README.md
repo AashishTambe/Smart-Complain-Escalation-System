@@ -18,7 +18,7 @@ The **Smart Complaint Escalation System** helps organizations track, manage, and
 ---
 
 ### 🔐 User Registration Page
-<img src="Screenshot/user_registration_page.png" width="700">
+<img src="Screenshort/user_registeration_page.png" width="700">
 
 ---
 
@@ -201,6 +201,7 @@ src/
 If you like this project, please ⭐ the repository!
 
 ---
+
 
 
 
