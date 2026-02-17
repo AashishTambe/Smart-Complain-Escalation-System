@@ -155,7 +155,7 @@ src/
 
 ## 👨‍💻 Author
 
-**Aashish Tambe**
+**Aashish Tambe**,**Ayush Jarhad**
 
 ---
 
@@ -164,3 +164,4 @@ src/
 If you like this project, please ⭐ the repository!
 
 ---
+
