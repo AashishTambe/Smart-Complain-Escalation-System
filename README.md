@@ -23,27 +23,27 @@ The **Smart Complaint Escalation System** helps organizations track, manage, and
 ---
 
 ### 📊 Dashboard
-<img src="Screenshot/home_page.png" width="700">
+<img src="Screenshort/home_page.png" width="700">
 
 ---
 
 ### 📝 Complaint Form
-<img src="Screenshot/complaint_registration_page.png" width="700">
+<img src="Screenshort/complaint_registration_page.png" width="700">
 
 ---
 
 ### 🏢 Admin Panel
-<img src="Screenshot/admin_page.png" width="700">
+<img src="Screenshort/admin_page.png" width="700">
 
 ---
 
 ### 📈 Staff Panel
-<img src="Screenshot/staff_page.png" width="700">
+<img src="Screenshort/staff_page.png" width="700">
 
 ---
 
 ### 🏢 User Panel
-<img src="Screenshot/user_page.png" width="700">
+<img src="Screenshort/user_page.png" width="700">
 
 ---
 
@@ -201,6 +201,7 @@ src/
 If you like this project, please ⭐ the repository!
 
 ---
+
 
 
 
