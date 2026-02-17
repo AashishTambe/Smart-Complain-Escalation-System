@@ -38,7 +38,7 @@ The **Smart Complaint Escalation System** helps organizations track, manage, and
 ---
 
 ### 📈 Staff Panel
-<img src="Screenshot/Staff_page.png" width="700">
+<img src="Screenshot/staff_page.png" width="700">
 
 ---
 
@@ -201,5 +201,6 @@ src/
 If you like this project, please ⭐ the repository!
 
 ---
+
 
 
