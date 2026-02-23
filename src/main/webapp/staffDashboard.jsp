@@ -14,6 +14,7 @@
     String priorityFilter = (String) request.getAttribute("priorityFilter");
     String deptFilter = (String) request.getAttribute("deptFilter");
 %>
+<!DOCTYPE html>
 <html>
 <head>
     <title><%= isAdmin ? "Admin Dashboard" : "Staff Dashboard" %></title>

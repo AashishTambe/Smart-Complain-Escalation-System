@@ -40,7 +40,7 @@ INSERT INTO escalation_rules (priority, level, sla_hours) VALUES
 -- Create test user (regular user who filed complaints)
 INSERT INTO users (name, email, password, role, department_id) VALUES ('Test User', 'testuser@test.com', '1234', 'USER', NULL);
 
--- Test complaints for IT department (assigned to John Jr Dev - id 2)
+-- Test complaints for IT department (assigned to Rohan Jr Dev - id 2)
 INSERT INTO complaints (user_id, category_id, title, description, priority, status, current_level, assigned_to, created_at, last_status_change) 
 VALUES (11, 1, 'Network Connection Issue', 'Unable to connect to company network', 'HIGH', 'OPEN', 1, 2, NOW(), NOW());
 
@@ -50,14 +50,14 @@ VALUES (11, 1, 'Printer Not Working', 'Network printer offline in office', 'MEDI
 INSERT INTO complaints (user_id, category_id, title, description, priority, status, current_level, assigned_to, created_at, last_status_change) 
 VALUES (11, 1, 'Software License Issue', 'Software license expired', 'LOW', 'OPEN', 1, 2, NOW(), NOW());
 
--- Test complaints for HR department (assigned to Alice HR Employee - id 5)
+-- Test complaints for HR department (assigned to Ashok HR Employee - id 5)
 INSERT INTO complaints (user_id, category_id, title, description, priority, status, current_level, assigned_to, created_at, last_status_change) 
 VALUES (11, 2, 'Salary Advance Request', 'Requesting advance on salary', 'MEDIUM', 'OPEN', 1, 5, NOW(), NOW());
 
 INSERT INTO complaints (user_id, category_id, title, description, priority, status, current_level, assigned_to, created_at, last_status_change) 
 VALUES (11, 2, 'Leave Approval Pending', 'Annual leave request pending approval', 'LOW', 'IN_PROGRESS', 1, 5, NOW(), NOW());
 
--- Test complaints for Maintenance department (assigned to Eve Worker - id 8)
+-- Test complaints for Maintenance department (assigned to om Worker - id 8)
 INSERT INTO complaints (user_id, category_id, title, description, priority, status, current_level, assigned_to, created_at, last_status_change) 
 VALUES (11, 3, 'Broken Door Handle', 'Door handle in office 201 broken', 'HIGH', 'OPEN', 1, 8, NOW(), NOW());
 

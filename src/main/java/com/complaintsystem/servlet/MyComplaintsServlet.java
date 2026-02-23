@@ -23,8 +23,12 @@ public class MyComplaintsServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
         String userRole = session != null ? (String) session.getAttribute("userRole") : null;
+        
+        System.out.println("MyComplaintsServlet: Session check - Session exists: " + (session != null) + ", UserId: " + userId + ", Role: " + userRole);
+        
         if (userId == null) {
-            resp.sendRedirect("login.jsp");
+            System.out.println("MyComplaintsServlet: No valid session found, redirecting to login");
+            resp.sendRedirect(req.getContextPath() + "/login.jsp");
             return;
         }
 
@@ -32,17 +36,23 @@ public class MyComplaintsServlet extends HttpServlet {
             List<Complaint> complaints;
             if ("USER".equals(userRole)) {
                 // Regular users see complaints they filed
+                System.out.println("MyComplaintsServlet: Fetching complaints for USER - userId: " + userId);
                 complaints = complaintDAO.getComplaintsByUser(userId);
             } else if ("ADMIN".equals(userRole)) {
                 // Admins see complaints assigned to them
+                System.out.println("MyComplaintsServlet: Fetching complaints for ADMIN - userId: " + userId);
                 complaints = complaintDAO.getComplaintsAssignedTo(userId);
             } else {
                 // Other department staff see assigned complaints
+                System.out.println("MyComplaintsServlet: Fetching complaints for STAFF - userId: " + userId + ", Role: " + userRole);
                 complaints = complaintDAO.getComplaintsAssignedTo(userId);
             }
+            System.out.println("MyComplaintsServlet: Found " + (complaints != null ? complaints.size() : 0) + " complaints");
             req.setAttribute("complaints", complaints);
             req.getRequestDispatcher("myComplaints.jsp").forward(req, resp);
         } catch (SQLException e) {
+            System.err.println("MyComplaintsServlet: Database error - " + e.getMessage());
+            e.printStackTrace();
             throw new ServletException(e);
         }
     }

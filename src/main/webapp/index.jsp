@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <html>
+<!DOCTYPE html>
+<html>
 
     <head>
         <title>Smart Complaint Escalation System</title>

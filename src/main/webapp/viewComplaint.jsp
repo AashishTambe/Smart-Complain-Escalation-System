@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.complaintsystem.dao.ComplaintDAO" %>
 <%@ page import="com.complaintsystem.model.Complaint" %>
+<!DOCTYPE html>
+<html>
 <%
     String idParam = request.getParameter("id");
     Complaint complaint = null;

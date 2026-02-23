@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <html>
+<!DOCTYPE html>
+<html>
 
     <head>
         <title>Register - Smart Complaint Escalation System</title>
@@ -61,7 +62,7 @@
                     <div class="form-card" style="max-width: 400px; margin: 40px auto;">
                         <h2 style="margin-top: 0; margin-bottom: 24px;">Create an Account</h2>
 
-                        <form action="register" method="post">
+                        <form action="${pageContext.request.contextPath}/register" method="post">
                             <div class="form-group">
                                 <label class="form-label" for="name">Full Name</label>
                                 <input type="text" id="name" name="name" class="form-control" required
@@ -80,12 +81,12 @@
                                     placeholder="Create a password" />
                             </div>
 
-                            <% if (request.getAttribute("error") !=null) { %>
+                            <% if (request.getAttribute("error") != null) { %>
                                 <div class="alert alert--danger">
                                     <span>⚠️</span>
-                                    <span>${error}</span>
+                                    <span><%= request.getAttribute("error") %></span>
                                 </div>
-                                <% } %>
+                            <% } %>
 
                                     <button type="submit" class="btn btn--primary"
                                         style="width: 100%; margin-top: 8px;">Register</button>

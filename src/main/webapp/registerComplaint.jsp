@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
     <% String userName=(String) session.getAttribute("userName"); String userRole=(String)
         session.getAttribute("userRole"); if (userName==null) { response.sendRedirect("login.jsp"); return; } %>
         <html>

@@ -6,6 +6,7 @@
     String userName = (String) session.getAttribute("userName");
     String userRole = (String) session.getAttribute("userRole");
 %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>My Complaints</title>

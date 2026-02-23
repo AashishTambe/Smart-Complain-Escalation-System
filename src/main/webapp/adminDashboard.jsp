@@ -12,6 +12,7 @@
     String currentView = (String) request.getAttribute("currentView");
     if (currentView == null) currentView = "all";
 %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Admin Dashboard</title>

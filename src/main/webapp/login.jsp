@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-    <html>
+<!DOCTYPE html>
+<html>
 
     <head>
         <title>Login - Smart Complaint Escalation System</title>
@@ -61,7 +62,7 @@
                     <div class="form-card" style="max-width: 400px; margin: 40px auto;">
                         <h2 style="margin-top: 0; margin-bottom: 24px;">Login to Your Account</h2>
 
-                        <form action="login" method="post">
+                        <form action="${pageContext.request.contextPath}/login" method="post">
                             <div class="form-group">
                                 <label class="form-label" for="email">Email Address</label>
                                 <input type="email" id="email" name="email" class="form-control" required
@@ -74,12 +75,12 @@
                                     placeholder="Enter your password" />
                             </div>
 
-                            <% if (request.getAttribute("error") !=null) { %>
+                            <% if (request.getAttribute("error") != null) { %>
                                 <div class="alert alert--danger">
                                     <span>⚠️</span>
-                                    <span>${error}</span>
+                                    <span><%= request.getAttribute("error") %></span>
                                 </div>
-                                <% } %>
+                            <% } %>
 
                                     <button type="submit" class="btn btn--primary"
                                         style="width: 100%; margin-top: 8px;">Login</button>

@@ -90,7 +90,7 @@
     <!-- Escalation servlet -->
     <servlet>
         <servlet-name>EscalationServlet</servlet-name>
-        <servlet-class>com.complaintsystem.controller.EscalationServlet</servlet-class>
+        <servlet-class>com.complaintsystem.servlet.EscalationServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>EscalationServlet</servlet-name>

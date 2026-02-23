@@ -7,23 +7,36 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function setupLoginForm() {
-    var form = document.querySelector('form[action="login"]');
+    var form = document.querySelector('form');
     if (!form) return;
+    
+    // Check if this is a login form by looking for email and password fields
+    var email = form.querySelector('input[name="email"]');
+    var password = form.querySelector('input[name="password"]');
+    if (!email || !password) return;
 
     form.addEventListener("submit", function (e) {
-        var email = form.querySelector('input[name="email"]');
-        var password = form.querySelector('input[name="password"]');
-        if (!email || !password) return;
-
         if (!email.value.trim() || !password.value.trim()) {
             e.preventDefault();
             alert("Please enter both email and password.");
+            return false;
         }
     });
 }
 
 function setupComplaintForm() {
-    var form = document.querySelector('form[action="registerComplaint"]');
+    // Find form by detecting if it has title and description fields
+    var forms = document.querySelectorAll('form');
+    var form = null;
+    
+    forms.forEach(function(f) {
+        var title = f.querySelector('input[name="title"]');
+        var description = f.querySelector('textarea[name="description"]');
+        if (title && description) {
+            form = f;
+        }
+    });
+    
     if (!form) return;
 
     form.addEventListener("submit", function (e) {
@@ -46,13 +59,15 @@ function setupComplaintForm() {
 }
 
 function setupStatusUpdateForms() {
-    var forms = document.querySelectorAll('form[action="updateStatus"]');
+    // Find forms that have a status select field
+    var forms = document.querySelectorAll('form');
     if (!forms || forms.length === 0) return;
 
     forms.forEach(function (form) {
+        var select = form.querySelector('select[name="status"]');
+        if (!select) return;
+        
         form.addEventListener("submit", function (e) {
-            var select = form.querySelector('select[name="status"]');
-            if (!select) return;
             var status = select.value;
             var ok = confirm("Change complaint status to \"" + status + "\"?");
             if (!ok) {
