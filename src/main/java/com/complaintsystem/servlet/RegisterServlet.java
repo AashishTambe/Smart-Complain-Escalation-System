@@ -26,11 +26,13 @@ public class RegisterServlet extends HttpServlet {
         String name = req.getParameter("name");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        String phone = req.getParameter("phone");
 
         // Basic validation
         if (name == null || name.trim().isEmpty() || 
             email == null || email.trim().isEmpty() || 
-            password == null || password.trim().isEmpty()) {
+            password == null || password.trim().isEmpty() ||
+            phone == null || phone.trim().isEmpty()) {
             
             req.setAttribute("error", "All fields are required");
             req.getRequestDispatcher("register.jsp").forward(req, resp);
@@ -50,6 +52,7 @@ public class RegisterServlet extends HttpServlet {
             newUser.setEmail(email);
             newUser.setPassword(password); // In production, hash this!
             newUser.setRole("USER");
+            newUser.setPhone(phone);
             newUser.setActive(true);
 
             userDAO.createUser(newUser);

@@ -24,20 +24,20 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String email = req.getParameter("email");
+        String identifier = req.getParameter("identifier");
         String password = req.getParameter("password");
 
         // Validate input
-        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            req.setAttribute("error", "Email and password are required.");
+        if (identifier == null || identifier.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            req.setAttribute("error", "Email/Phone and password are required.");
             req.getRequestDispatcher("login.jsp").forward(req, resp);
             return;
         }
 
         try {
-            User user = userDAO.findByEmailAndPassword(email, password);
+            User user = userDAO.findByIdentifierAndPassword(identifier, password);
             if (user == null) {
-                req.setAttribute("error", "Invalid email or password");
+                req.setAttribute("error", "Invalid Email/Phone or password");
                 req.getRequestDispatcher("login.jsp").forward(req, resp);
                 return;
             }

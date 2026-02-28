@@ -29,7 +29,6 @@ public class DBConnection {
     public static Connection getConnection() throws SQLException {
         try {
             Connection conn = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println("✓ Database connection established");
             return conn;
         } catch (SQLException e) {
             System.err.println("✗ Failed to connect to database");

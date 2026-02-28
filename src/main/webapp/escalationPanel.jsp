@@ -1,22 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Escalation Panel</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
-<body>
-    <jsp:include page="header.jsp" />
+    <%@ include file="header.jsp" %>
 
-    <div class="container mt-5">
-        <h2>Escalation Rules Management</h2>
+        <div class="card">
+            <h2 style="margin-top: 0;">Escalation Rules Management</h2>
+            <p>This page is for managing escalation rules. Currently, rules are defined in the database.</p>
 
-        <p>This page is for managing escalation rules. Currently, rules are defined in the database.</p>
+            <div
+                style="margin-top: 24px; padding: 16px; background: var(--color-bg-muted); border-radius: var(--radius-md); border-left: 4px solid var(--color-primary);">
+                <p style="margin: 0; font-weight: 500;">Note:</p>
+                <p style="margin: 8px 0 0 0;">Automatic escalation logic is handled by the <code>EscalationJob</code>
+                    which runs in the background. You can monitor escalated complaints in the Dashboard.</p>
+            </div>
+        </div>
 
-        <!-- Add form or table to view/edit rules if needed -->
-    </div>
-
-    <jsp:include page="footer.jsp" />
-</body>
-</html>
+        <%@ include file="footer.jsp" %>

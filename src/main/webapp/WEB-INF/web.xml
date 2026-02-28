@@ -97,6 +97,16 @@
         <url-pattern>/escalationPanel</url-pattern>
     </servlet-mapping>
 
+    <!-- Notification servlet -->
+    <servlet>
+        <servlet-name>NotificationServlet</servlet-name>
+        <servlet-class>com.complaintsystem.servlet.NotificationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotificationServlet</servlet-name>
+        <url-pattern>/notifications</url-pattern>
+    </servlet-mapping>
+
     <!-- Generic error page -->
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>

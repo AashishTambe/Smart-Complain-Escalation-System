@@ -7,6 +7,7 @@ public class User {
     private String password;
     private String role;        // USER, OFFICER_L1, OFFICER_L2, ADMIN
     private Integer departmentId;
+    private String phone;
     private boolean active;
 
     public int getId() {
@@ -55,6 +56,14 @@ public class User {
 
     public void setDepartmentId(Integer departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public boolean isActive() {
