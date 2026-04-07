@@ -1,18 +1,19 @@
 package com.complaintsystem.servlet;
 
-import com.complaintsystem.dao.ComplaintDAO;
-import com.complaintsystem.dao.DepartmentDAO;
-import com.complaintsystem.model.Complaint;
-import com.complaintsystem.model.Department;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
+
+import com.complaintsystem.dao.ComplaintDAO;
+import com.complaintsystem.dao.DepartmentDAO;
+import com.complaintsystem.model.Complaint;
+import com.complaintsystem.model.Department;
 
 public class StaffDashboardServlet extends HttpServlet {
 
@@ -27,7 +28,7 @@ public class StaffDashboardServlet extends HttpServlet {
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
         String role = session != null ? (String) session.getAttribute("userRole") : null;
         String userName = session != null ? (String) session.getAttribute("userName") : null;
-        
+
         if (userId == null || role == null) {
             resp.sendRedirect("login.jsp");
             return;
@@ -60,7 +61,7 @@ public class StaffDashboardServlet extends HttpServlet {
             req.setAttribute("complaints", complaints);
             req.setAttribute("userName", userName);
             req.setAttribute("userRole", role);
-            
+
             req.getRequestDispatcher("staffDashboard.jsp").forward(req, resp);
         } catch (SQLException e) {
             throw new ServletException(e);

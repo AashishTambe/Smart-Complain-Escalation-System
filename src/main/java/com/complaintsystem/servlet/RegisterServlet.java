@@ -1,15 +1,16 @@
 package com.complaintsystem.servlet;
 
-import com.complaintsystem.dao.UserDAO;
-import com.complaintsystem.model.User;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
+
+import com.complaintsystem.dao.UserDAO;
+import com.complaintsystem.model.User;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -29,11 +30,11 @@ public class RegisterServlet extends HttpServlet {
         String phone = req.getParameter("phone");
 
         // Basic validation
-        if (name == null || name.trim().isEmpty() || 
-            email == null || email.trim().isEmpty() || 
+        if (name == null || name.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
             password == null || password.trim().isEmpty() ||
             phone == null || phone.trim().isEmpty()) {
-            
+
             req.setAttribute("error", "All fields are required");
             req.getRequestDispatcher("register.jsp").forward(req, resp);
             return;
@@ -56,7 +57,7 @@ public class RegisterServlet extends HttpServlet {
             newUser.setActive(true);
 
             userDAO.createUser(newUser);
-            
+
             // Redirect to login with success message
             resp.sendRedirect("login.jsp?registered=true");
 

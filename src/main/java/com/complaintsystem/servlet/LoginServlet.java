@@ -1,15 +1,16 @@
 package com.complaintsystem.servlet;
 
-import com.complaintsystem.dao.UserDAO;
-import com.complaintsystem.model.User;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.sql.SQLException;
+
+import com.complaintsystem.dao.UserDAO;
+import com.complaintsystem.model.User;
 
 public class LoginServlet extends HttpServlet {
 
@@ -49,7 +50,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId", user.getId());
             session.setAttribute("userName", user.getName());
             session.setAttribute("userRole", user.getRole());
-            
+
             // Verify session was created
             if (session.getAttribute("userId") == null) {
                 System.err.println("LoginServlet ERROR: Session not properly created!");

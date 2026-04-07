@@ -1,0 +1,327 @@
+╔════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                    DYNAMIC ESCALATION SETTINGS SYSTEM - REFERENCE CARD                             ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              QUICK ACCESS - FILE LOCATIONS                                      │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  Model (Data Structure):                                                                         │
+│  └─ EscalationSettings.java                                                                      │
+│     └─ src/main/java/com/complaintsystem/model/                                                 │
+│                                                                                                   │
+│  Data Access Layer:                                                                              │
+│  └─ EscalationSettingsDAO.java                                                                   │
+│     └─ src/main/java/com/complaintsystem/dao/                                                   │
+│                                                                                                   │
+│  Business Logic:                                                                                  │
+│  └─ EscalationService.java                                                                       │
+│     └─ src/main/java/com/complaintsystem/service/                                               │
+│                                                                                                   │
+│  Controller (Servlet):                                                                           │
+│  └─ AdminEscalationSettingsServlet.java                                                         │
+│     └─ src/main/java/com/complaintsystem/servlet/                                               │
+│                                                                                                   │
+│  View (JSP):                                                                                      │
+│  └─ adminEscalationSettings.jsp                                                                  │
+│     └─ src/main/webapp/                                                                          │
+│                                                                                                   │
+│  Database:                                                                                        │
+│  └─ escalation_settings table                                                                    │
+│     └─ Created by data.sql                                                                       │
+│                                                                                                   │
+│  Configuration:                                                                                   │
+│  └─ web.xml                                                                                       │
+│     └─ src/main/webapp/WEB-INF/                                                                  │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                  COMPONENT DIAGRAM                                               │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│   USER (ADMIN)                                                                                   │
+│        │                                                                                         │
+│        ├─── [View Settings] ──────► JSP (adminEscalationSettings.jsp)                           │
+│        │                                          │                                               │
+│        ├─── [Create Config] ───────► SERVLET (AdminEscalationSettingsServlet)                   │
+│        │                                          │                                               │
+│        ├─── [Edit Config] ────────┐              │                                               │
+│        │                           │              │ ◄─── Request Handler                          │
+│        └─── [Delete Config] ──────┘              │                                               │
+│                                                  │                                               │
+│                                                  ▼                                               │
+│                                        DAO (EscalationSettingsDAO)                              │
+│                                                  │                                               │
+│                                                  ▼                                               │
+│                                      ╔═══════════════════════╗                                  │
+│                                      ║  DATABASE (MySQL)    ║                                  │
+│                                      ║ escalation_settings  ║                                  │
+│                                      ╚═══════════════════════╝                                  │
+│                                                                                                   │
+│   BACKGROUND JOB                                                                                 │
+│        │                                                                                         │
+│        └─── EscalationJob ─────────► SERVICE (EscalationService)                               │
+│                                              │                                                   │
+│                                              ├─► Read Active Settings (DB)                       │
+│                                              │                                                   │
+│                                              ├─► Calculate SLA                                    │
+│                                              │                                                   │
+│                                              └─► Execute Escalation                              │
+│                                                   └─► Update DB                                  │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                        DATABASE TABLE SCHEMA - escalation_settings                              │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  Column Name                    Type            Default         Purpose                          │
+│  ─────────────────────────────  ──────────────  ──────────      ─────────────────────────────    │
+│  id                             INT AUTO_INC    -               Primary key                      │
+│  setting_name                   VARCHAR(100)    -               Configuration name               │
+│  max_escalation_level           INT             3               Max escalation tiers             │
+│  low_priority_sla_hours         INT             24              LOW priority SLA                 │
+│  medium_priority_sla_hours      INT             12              MEDIUM priority SLA              │
+│  high_priority_sla_hours        INT             6               HIGH priority SLA                │
+│  auto_escalation_enabled        TINYINT         1               Enable auto escalation           │
+│  notify_on_escalation           TINYINT         1               Send notifications               │
+│  escalation_levels              TEXT            NULL            Descriptive text                 │
+│  created_at                     DATETIME        NOW()           Creation timestamp               │
+│  updated_at                     DATETIME        NOW()           Last update timestamp            │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           ESCALATION DECISION LOGIC FLOW                                         │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  EscalationJob runs [Scheduled]                                                                  │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Get active settings from DB (id=1)                                                             │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Is auto_escalation_enabled = 1?  ──[NO]──► Skip this complaint                                │
+│        │                                                                                         │
+│       [YES]                                                                                      │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Get complaint age (hours since last_status_change)                                             │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Get SLA for complaint priority (LOW/MEDIUM/HIGH)                                               │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Is age > SLA?  ──[NO]──► Not yet, wait for next run                                           │
+│        │                                                                                         │
+│       [YES]                                                                                      │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  Is current_level < max_escalation_level?  ──[NO]──► Already at max, stop                      │
+│        │                                                                                         │
+│       [YES]                                                                                      │
+│        │                                                                                         │
+│        ▼                                                                                         │
+│  ✓ ESCALATE COMPLAINT                                                                           │
+│        │                                                                                         │
+│        ├─► Increment current_level by 1                                                         │
+│        ├─► Set status = 'ESCALATED'                                                             │
+│        ├─► Find new assignee for new level                                                      │
+│        ├─► Create notification (if enabled)                                                     │
+│        ├─► Record history entry                                                                 │
+│        └─► Update last_status_change to NOW()                                                   │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                               ADMIN PANEL FEATURES                                               │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  URL: http://localhost:8080/ComplaintSystem/adminEscalationSettings                             │
+│                                                                                                   │
+│  ┌──────────────────────────────────────────────────────────────────────────────────────┐      │
+│  │  ⚙️ ESCALATION SETTINGS                    [+ NEW CONFIGURATION]                     │      │
+│  ├──────────────────────────────────────────────────────────────────────────────────────┤      │
+│  │                                                                                       │      │
+│  │  Settings Cards (Grid Layout):           Edit Form (when editing):                   │      │
+│  │  ├─ Setting Name                        ├─ Setting Name (text input)                 │      │
+│  │  ├─ Max Level: 3                        ├─ Max Level (number 1-5)                    │      │
+│  │  ├─ LOW SLA: 24 hrs                     ├─ LOW Priority SLA (hours)                  │      │
+│  │  ├─ MEDIUM SLA: 12 hrs                  ├─ MEDIUM Priority SLA (hours)               │      │
+│  │  ├─ HIGH SLA: 6 hrs                     ├─ HIGH Priority SLA (hours)                 │      │
+│  │  ├─ Auto Escalation: ✓ Enabled          ├─ ☑ Auto Escalation Checkbox               │      │
+│  │  ├─ Notifications: ✓ Enabled            ├─ ☑ Notifications Checkbox                 │      │
+│  │  └─ [EDIT] [DELETE]                     ├─ Escalation Levels (textarea)              │      │
+│  │                                         ├─ [SAVE] [RESET] [CANCEL]                  │      │
+│  │  (Multiple cards displayed side by side)                                             │      │
+│  │                                                                                       │      │
+│  └──────────────────────────────────────────────────────────────────────────────────────┘      │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                         DEFAULT CONFIGURATION ON SETUP                                           │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  Setting Name:              Default                                                             │
+│  Max Escalation Level:      3                                                                   │
+│  LOW Priority SLA:          24 hours                                                             │
+│  MEDIUM Priority SLA:       12 hours                                                             │
+│  HIGH Priority SLA:         6 hours                                                              │
+│  Auto Escalation:           Enabled (1)                                                         │
+│  Notifications:             Enabled (1)                                                         │
+│  Escalation Levels:         Level 1: Staff → Level 2: Manager → Level 3: Admin                 │
+│                                                                                                   │
+│  Example: HIGH priority complaint filed at 10:00 AM                                              │
+│  ├─ 4:00 PM (6 hours) - SLA exceeded, escalates to Level 2                                      │
+│  └─ Notification sent to manager, history recorded                                               │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                        KEY CLASS METHODS - QUICK REFERENCE                                      │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  EscalationSettings (Model):                                                                    │
+│  ├─ getSlaHoursForPriority(priority)  Returns SLA for given priority                            │
+│  ├─ getMaxEscalationLevel()           Returns max level from settings                           │
+│  └─ isAutoEscalationEnabled()         Returns auto escalation status                            │
+│                                                                                                   │
+│  EscalationSettingsDAO (Database):                                                              │
+│  ├─ getAllSettings()                  Get all configurations                                    │
+│  ├─ getSettingsById(id)               Get specific config                                      │
+│  ├─ getActiveSettings()               Get default (id=1)                                       │
+│  ├─ createSettings(obj)               Create new config                                        │
+│  ├─ updateSettings(obj)               Update existing config                                   │
+│  └─ deleteSettings(id)                Delete config (not id=1)                                 │
+│                                                                                                   │
+│  EscalationService (Business Logic):                                                            │
+│  ├─ shouldEscalate(complaintId)       Determine if escalation needed                           │
+│  ├─ escalateComplaint(complaintId)    Perform escalation                                       │
+│  └─ getActiveSettings()               Get current active settings                              │
+│                                                                                                   │
+│  AdminEscalationSettingsServlet:                                                                │
+│  ├─ doGet()                           Display settings or edit form                             │
+│  └─ doPost()                          Save, create, or delete settings                          │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DEPLOYMENT CHECKLIST                                               │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  Step 1: Database                                                                               │
+│  ├─ Backup existing database                  [ ] Done                                          │
+│  ├─ Run updated data.sql                       [ ] Done                                         │
+│  └─ Verify escalation_settings table exists   [ ] Done                                         │
+│                                                                                                   │
+│  Step 2: Code                                                                                   │
+│  ├─ All 5 Java classes in proper directories  [ ] Done                                         │
+│  ├─ JSP file in webapp directory              [ ] Done                                         │
+│  ├─ web.xml updated with servlet mapping      [ ] Done                                         │
+│  └─ EscalationJob.java updated                [ ] Done                                         │
+│                                                                                                   │
+│  Step 3: Build                                                                                  │
+│  ├─ Run: mvn clean install                    [ ] Done                                         │
+│  └─ No compilation errors                     [ ] Done                                         │
+│                                                                                                   │
+│  Step 4: Tomcat                                                                                 │
+│  ├─ Deploy WAR file to webapps                [ ] Done                                         │
+│  ├─ Restart Tomcat                            [ ] Done                                         │
+│  └─ Check server startup logs                 [ ] Done                                         │
+│                                                                                                   │
+│  Step 5: Testing                                                                                │
+│  ├─ Access admin panel with browser           [ ] Done                                         │
+│  ├─ Create new configuration                  [ ] Done                                         │
+│  ├─ Edit configuration                        [ ] Done                                         │
+│  ├─ Delete configuration                      [ ] Done                                         │
+│  ├─ Test escalation with sample complaint     [ ] Done                                         │
+│  └─ Verify notifications created              [ ] Done                                         │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          COMMON SQL QUERIES FOR MAINTENANCE                                     │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  View all settings:                                                                             │
+│  ► SELECT * FROM escalation_settings;                                                          │
+│                                                                                                   │
+│  View default settings:                                                                         │
+│  ► SELECT * FROM escalation_settings WHERE id = 1;                                             │
+│                                                                                                   │
+│  Update SLA for HIGH priority:                                                                  │
+│  ► UPDATE escalation_settings SET high_priority_sla_hours = 4 WHERE id = 1;                    │
+│                                                                                                   │
+│  Disable auto escalation (emergency):                                                           │
+│  ► UPDATE escalation_settings SET auto_escalation_enabled = 0 WHERE id = 1;                    │
+│                                                                                                   │
+│  Enable auto escalation:                                                                        │
+│  ► UPDATE escalation_settings SET auto_escalation_enabled = 1 WHERE id = 1;                    │
+│                                                                                                   │
+│  Check complaints due for escalation:                                                           │
+│  ► SELECT c.id, c.priority, TIMESTAMPDIFF(HOUR, c.last_status_change, NOW()) as hours          │
+│     FROM complaints c                                                                            │
+│     WHERE c.status IN ('OPEN','IN_PROGRESS','ESCALATED')                                        │
+│     AND c.current_level < 3 AND TIMESTAMPDIFF(HOUR, c.last_status_change, NOW()) > 6;          │
+│                                                                                                   │
+│  View escalation history:                                                                       │
+│  ► SELECT * FROM complaint_history WHERE new_status = 'ESCALATED' ORDER BY changed_at DESC;   │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            TROUBLESHOOT QUICK GUIDE                                             │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  Problem                           Solution                                                     │
+│  ─────────────────────────────────  ──────────────────────────────────────────────────────      │
+│  Cannot access admin panel         ├─ Check URL: /adminEscalationSettings                       │
+│                                    ├─ Verify logged in                                         │
+│                                    └─ Check user role = ADMIN                                  │
+│                                                                                                   │
+│  Servlet not found (404)           ├─ Check web.xml has servlet mapping                        │
+│                                    ├─ Rebuild: mvn clean install                               │
+│                                    └─ Restart Tomcat                                           │
+│                                                                                                   │
+│  Table doesn't exist               ├─ Run data.sql again                                       │
+│                                    └─ CREATE TABLE escalation_settings if not exists            │
+│                                                                                                   │
+│  No complaints escalating          ├─ Check: auto_escalation_enabled = 1                       │
+│                                    ├─ Check: complaint age > SLA                                │
+│                                    └─ Check: current_level < max_level                         │
+│                                                                                                   │
+│  Settings not saving               ├─ Check input validation errors                             │
+│                                    ├─ Verify database connection                               │
+│                                    └─ Check database permissions                               │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DOCUMENTATION MAP                                                   │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                   │
+│  QUICK_START.md                        ► Read this first (5-minute overview)                    │
+│                                                                                                   │
+│  ESCALATION_SETTINGS_IMPLEMENTATION.md ► Deep technical details & architecture                  │
+│                                                                                                   │
+│  INTEGRATION_CHECKLIST.md              ► Step-by-step integration guide                         │
+│                                                                                                   │
+│  COMPLETE_SUMMARY.md                   ► Full reference document                                │
+│                                                                                                   │
+│  ADMIN_NAVIGATION_SNIPPET.jsp          ► Code to add admin menu link                            │
+│                                                                                                   │
+│  This File (REFERENCE_CARD.txt)        ► Visual overview & quick lookup                         │
+│                                                                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                                  ║
+║  System Status: ✅ COMPLETE & READY FOR DEPLOYMENT                                            ║
+║  Version: 1.0                                                                                   ║
+║  Last Updated: March 7, 2026                                                                   ║
+║                                                                                                  ║
+║  For Questions: Refer to appropriate documentation file listed above                           ║
+║                                                                                                  ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════╝

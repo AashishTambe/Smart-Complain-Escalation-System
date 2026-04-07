@@ -1,14 +1,14 @@
 package com.complaintsystem.dao;
 
-import com.complaintsystem.config.DBConnection;
-import com.complaintsystem.model.Complaint;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.complaintsystem.config.DBConnection;
+import com.complaintsystem.model.Complaint;
 
 public class ComplaintDAO {
 
@@ -139,26 +139,30 @@ public class ComplaintDAO {
         c.setPriority(rs.getString("priority"));
         c.setStatus(rs.getString("status"));
         c.setCurrentLevel(rs.getInt("current_level"));
-        
+
         int assigned = rs.getInt("assigned_to");
         c.setAssignedTo(rs.wasNull() ? null : assigned);
-        
+
         c.setCreatedAt(rs.getTimestamp("created_at"));
         c.setLastStatusChange(rs.getTimestamp("last_status_change"));
-        
+
         // These columns may not exist in all queries, handle gracefully
         try {
             String catName = rs.getString("category_name");
-            if (catName != null) c.setCategoryName(catName);
+            if (catName != null) {
+				c.setCategoryName(catName);
+			}
         } catch (SQLException ignored) {
         }
-        
+
         try {
             String assignedName = rs.getString("assigned_to_name");
-            if (assignedName != null) c.setAssignedToName(assignedName);
+            if (assignedName != null) {
+				c.setAssignedToName(assignedName);
+			}
         } catch (SQLException ignored) {
         }
-        
+
         return c;
     }
 }

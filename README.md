@@ -49,10 +49,10 @@ The **Smart Complaint Escalation System** helps organizations track, manage, and
 
 ## 🛠️ Tech Stack
 
-* 💻 **Backend:** Java 21 (Servlets, JSP)
+* 💻 **Backend:** Java 11 (Servlets, JSP)
 * 🌐 **Server:** Apache Tomcat 9
-* 🗄️ **Database:** MySQL 8.0
-* 🔗 **Connectivity:** JDBC (MySQL Connector 8.3.0)
+* 🗄️ **Database:** MySQL 8.x
+* 🔗 **Connectivity:** JDBC (MySQL Connector/J 8.1.0)
 * 📦 **Build Tool:** Maven
 
 ---

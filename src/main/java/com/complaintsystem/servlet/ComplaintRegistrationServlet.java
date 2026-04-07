@@ -1,18 +1,20 @@
 package com.complaintsystem.servlet;
 
-import com.complaintsystem.config.DBConnection;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+
+import com.complaintsystem.config.DBConnection;
 
 public class ComplaintRegistrationServlet extends HttpServlet {
 
@@ -39,17 +41,35 @@ public class ComplaintRegistrationServlet extends HttpServlet {
     private String getRoleForLevelAndDept(int level, int deptId) {
         // Assuming deptId: 1=IT, 2=HR, 3=Maintenance
         if (deptId == 1) { // IT
-            if (level == 1) return "IT_JR_DEV";
-            if (level == 2) return "IT_SR_DEV";
-            if (level == 3) return "IT_HEAD";
+            if (level == 1) {
+				return "IT_JR_DEV";
+			}
+            if (level == 2) {
+				return "IT_SR_DEV";
+			}
+            if (level == 3) {
+				return "IT_HEAD";
+			}
         } else if (deptId == 2) { // HR
-            if (level == 1) return "HR_EMPLOYEE";
-            if (level == 2) return "HR_MANAGER";
-            if (level == 3) return "HR_HEAD";
+            if (level == 1) {
+				return "HR_EMPLOYEE";
+			}
+            if (level == 2) {
+				return "HR_MANAGER";
+			}
+            if (level == 3) {
+				return "HR_HEAD";
+			}
         } else if (deptId == 3) { // Maintenance
-            if (level == 1) return "MAINT_WORKER";
-            if (level == 2) return "MAINT_ENGINEER";
-            if (level == 3) return "MAINT_HEAD";
+            if (level == 1) {
+				return "MAINT_WORKER";
+			}
+            if (level == 2) {
+				return "MAINT_ENGINEER";
+			}
+            if (level == 3) {
+				return "MAINT_HEAD";
+			}
         }
         return null;
     }
@@ -89,13 +109,14 @@ public class ComplaintRegistrationServlet extends HttpServlet {
                 }
             }
 
-            // Insert complaint
+            // Insert complaint and get generated ID
             String sql = "INSERT INTO complaints " +
                     "(user_id, category_id, title, description, priority, status, current_level, assigned_to) " +
                     "VALUES (?,?,?,?,?,'OPEN',1,?)";
 
+            int complaintId = -1;
             try (Connection conn = DBConnection.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
                 ps.setInt(1, userId);
                 ps.setInt(2, categoryId);
@@ -109,22 +130,40 @@ public class ComplaintRegistrationServlet extends HttpServlet {
                 }
 
                 ps.executeUpdate();
-            }
-            
-            resp.sendRedirect("myComplaints");
 
-        } catch (NumberFormatException e) {
-            req.setAttribute("error", "Invalid category selected.");
-            req.getRequestDispatcher("registerComplaint.jsp").forward(req, resp);
-        } catch (SQLException e) {
+                // Get generated complaint ID
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        complaintId = generatedKeys.getInt(1);
+                    }
+                }
+            }
+
+            // Create notification for assigned staff
+            if (complaintId > 0 && assignedTo != null) {
+                String notificationSql = "INSERT INTO notifications " +
+                        "(complaint_id, recipient_id, type, message, sent) " +
+                        "VALUES (?, ?, 'SYSTEM', ?, 0)";
+                try (Connection conn = DBConnection.getConnection();
+                     PreparedStatement ps = conn.prepareStatement(notificationSql)) {
+                    ps.setInt(1, complaintId);
+                    ps.setInt(2, assignedTo);
+                    ps.setString(3, "New complaint #" + complaintId + " assigned to you - Priority: " + priority);
+                    ps.executeUpdate();
+                    System.out.println("✓ Notification created for new complaint #" + complaintId);
+                } catch (SQLException e) {
+                    System.err.println("✗ Error creating notification: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            // Redirect to My Complaints page with success message
+            resp.sendRedirect("myComplaints?success=true&complaintId=" + complaintId);
+        } catch (NumberFormatException | SQLException e) {
+            System.err.println("✗ Error registering complaint: " + e.getMessage());
             e.printStackTrace();
-            req.setAttribute("error", "Database error: " + e.getMessage());
-            req.getRequestDispatcher("registerComplaint.jsp").forward(req, resp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("error", "An unexpected error occurred: " + e.getMessage());
-            req.getRequestDispatcher("registerComplaint.jsp").forward(req, resp);
+            // Redirect back to registration form with error message
+            resp.sendRedirect("registerComplaint?error=" + e.getMessage());
         }
     }
 }
-

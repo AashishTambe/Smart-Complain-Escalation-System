@@ -1,12 +1,13 @@
 package com.complaintsystem.dao;
 
-import com.complaintsystem.config.DBConnection;
-import com.complaintsystem.model.User;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.complaintsystem.config.DBConnection;
+import com.complaintsystem.model.User;
 
 public class UserDAO {
 
@@ -71,16 +72,16 @@ public class UserDAO {
     public void createUser(User user) throws SQLException {
         String sql = "INSERT INTO users (name, email, password, role, active, phone) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
             ps.setString(4, user.getRole()); // Default to 'USER' or as set
             ps.setBoolean(5, user.isActive()); // Default to true or as set
             ps.setString(6, user.getPhone());
-            
+
             ps.executeUpdate();
-            
+
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     user.setId(rs.getInt(1));

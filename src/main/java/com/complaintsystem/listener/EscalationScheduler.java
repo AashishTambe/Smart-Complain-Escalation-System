@@ -1,11 +1,12 @@
 package com.complaintsystem.listener;
 
-import com.complaintsystem.job.EscalationJob;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import com.complaintsystem.job.EscalationJob;
 
 public class EscalationScheduler implements ServletContextListener {
 

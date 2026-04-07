@@ -87,16 +87,6 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
-    <!-- Escalation servlet -->
-    <servlet>
-        <servlet-name>EscalationServlet</servlet-name>
-        <servlet-class>com.complaintsystem.servlet.EscalationServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>EscalationServlet</servlet-name>
-        <url-pattern>/escalationPanel</url-pattern>
-    </servlet-mapping>
-
     <!-- Notification servlet -->
     <servlet>
         <servlet-name>NotificationServlet</servlet-name>

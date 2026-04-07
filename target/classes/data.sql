@@ -5,6 +5,7 @@ CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(100) NOT NULL
 CREATE TABLE complaint_categories (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(100) NOT NULL UNIQUE,department_id INT NOT NULL,FOREIGN KEY (department_id) REFERENCES departments(id));
 CREATE TABLE complaints (id INT AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL,category_id INT NOT NULL,title VARCHAR(200) NOT NULL,description TEXT NOT NULL,priority ENUM('LOW','MEDIUM','HIGH') NOT NULL,status ENUM('OPEN','IN_PROGRESS','ESCALATED','RESOLVED','CLOSED') DEFAULT 'OPEN',current_level INT NOT NULL DEFAULT 1,assigned_to INT NULL,created_at DATETIME DEFAULT CURRENT_TIMESTAMP,last_status_change DATETIME DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (user_id) REFERENCES users(id),FOREIGN KEY (category_id) REFERENCES complaint_categories(id),FOREIGN KEY (assigned_to) REFERENCES users(id));
 CREATE TABLE escalation_rules (id INT AUTO_INCREMENT PRIMARY KEY,category_id INT NULL,priority ENUM('LOW','MEDIUM','HIGH') NOT NULL,level INT NOT NULL,sla_hours INT NOT NULL,UNIQUE (category_id, priority, level),FOREIGN KEY (category_id) REFERENCES complaint_categories(id));
+CREATE TABLE escalation_settings (id INT AUTO_INCREMENT PRIMARY KEY,setting_name VARCHAR(100) NOT NULL UNIQUE,max_escalation_level INT NOT NULL DEFAULT 3,low_priority_sla_hours INT NOT NULL DEFAULT 24,medium_priority_sla_hours INT NOT NULL DEFAULT 12,high_priority_sla_hours INT NOT NULL DEFAULT 6,auto_escalation_enabled TINYINT(1) DEFAULT 1,notify_on_escalation TINYINT(1) DEFAULT 1,escalation_levels TEXT,created_at DATETIME DEFAULT CURRENT_TIMESTAMP,updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
 CREATE TABLE complaint_history (id INT AUTO_INCREMENT PRIMARY KEY,complaint_id INT NOT NULL,old_status ENUM('OPEN','IN_PROGRESS','ESCALATED','RESOLVED','CLOSED'),new_status ENUM('OPEN','IN_PROGRESS','ESCALATED','RESOLVED','CLOSED'),old_level INT,new_level INT,changed_by INT NULL,comment VARCHAR(255),changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (complaint_id) REFERENCES complaints(id),FOREIGN KEY (changed_by) REFERENCES users(id));
 CREATE TABLE notifications (id INT AUTO_INCREMENT PRIMARY KEY,complaint_id INT NOT NULL,recipient_id INT NOT NULL,type ENUM('EMAIL','SYSTEM') NOT NULL,message VARCHAR(255) NOT NULL,created_at DATETIME DEFAULT CURRENT_TIMESTAMP,sent TINYINT(1) DEFAULT 0,sent_at DATETIME NULL,FOREIGN KEY (complaint_id) REFERENCES complaints(id),FOREIGN KEY (recipient_id) REFERENCES users(id));
 
@@ -35,3 +36,7 @@ INSERT INTO escalation_rules (priority, level, sla_hours) VALUES
 ('LOW', 1, 24), ('LOW', 2, 48), ('LOW', 3, 72),
 ('MEDIUM', 1, 12), ('MEDIUM', 2, 24), ('MEDIUM', 3, 36),
 ('HIGH', 1, 6), ('HIGH', 2, 12), ('HIGH', 3, 18);
+
+-- Default escalation settings
+INSERT INTO escalation_settings (setting_name, max_escalation_level, low_priority_sla_hours, medium_priority_sla_hours, high_priority_sla_hours, auto_escalation_enabled, notify_on_escalation, escalation_levels)
+VALUES ('Default', 3, 24, 12, 6, 1, 1, 'Level 1: Staff -> Level 2: Manager -> Level 3: Admin');

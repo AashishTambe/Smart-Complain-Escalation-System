@@ -13,8 +13,7 @@
                                             %>
                                             <% String activeDashboard=currentPage.contains("staffDashboard")
                                                 ? "sidebar__link--active" : "" ; %>
-                                                <% String activeEscalation=currentPage.contains("escalationPanel")
-                                                    ? "sidebar__link--active" : "" ; %>
+
                                                     <% String activeLogin=currentPage.contains("login.jsp")
                                                         ? "sidebar__link--active" : "" ; %>
                                                         <% String activeRegister=currentPage.contains("register.jsp")
@@ -84,20 +83,6 @@
                                                                                                             </span>
                                                                                                         </a>
                                                                                                     </li>
-                                                                                                    <% if
-                                                                                                        ("ADMIN".equals(userRole))
-                                                                                                        { %>
-                                                                                                        <li
-                                                                                                            class="sidebar__item">
-                                                                                                            <a href="escalationPanel"
-                                                                                                                class="sidebar__link <%= activeEscalation %>">
-                                                                                                                <span
-                                                                                                                    class="sidebar__link-icon">📈</span>
-                                                                                                                <span>Escalation
-                                                                                                                    Panel</span>
-                                                                                                            </a>
-                                                                                                        </li>
-                                                                                                        <% } %>
                                                                                                             <% } %>
                                                                                                                 <% if
                                                                                                                     (userId==null)

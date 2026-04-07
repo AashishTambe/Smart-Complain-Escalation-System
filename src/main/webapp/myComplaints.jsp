@@ -14,6 +14,15 @@
                                 <% } %>
                         </div>
 
+                        <%-- Success Message Alert --%>
+                        <% String success = request.getParameter("success");
+                           String complaintId = request.getParameter("complaintId");
+                           if ("true".equals(success) && complaintId != null) { %>
+                            <div style="padding: 16px; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; margin-bottom: 24px; color: #155724;">
+                                <strong>✓ Success!</strong> Your complaint #<%= complaintId %> has been registered successfully. An assigned staff member will review it shortly.
+                            </div>
+                        <% } %>
+
                         <% if (complaints==null || complaints.isEmpty()) { %>
                             <div class="card text-center py-8">
                                 <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;">📭</div>

@@ -1,14 +1,14 @@
 package com.complaintsystem.dao;
 
-import com.complaintsystem.config.DBConnection;
-import com.complaintsystem.model.Department;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.complaintsystem.config.DBConnection;
+import com.complaintsystem.model.Department;
 
 public class DepartmentDAO {
 

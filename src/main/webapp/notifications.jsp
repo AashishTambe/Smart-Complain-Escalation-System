@@ -11,6 +11,7 @@ List<Notification> notifications = (List<Notification>) request.getAttribute("no
 
 <div class="flex-between mb-6">
     <h2 style="margin: 0;">My Notifications</h2>
+    <a href="javascript:history.back()" class="btn btn--secondary">← Go Back</a>
 </div>
 
 <% if (notifications == null || notifications.isEmpty()) { %>

@@ -1,16 +1,17 @@
 package com.complaintsystem.servlet;
 
-import com.complaintsystem.dao.ComplaintDAO;
-import com.complaintsystem.model.Complaint;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
+
+import com.complaintsystem.dao.ComplaintDAO;
+import com.complaintsystem.model.Complaint;
 
 public class MyComplaintsServlet extends HttpServlet {
 
@@ -23,9 +24,9 @@ public class MyComplaintsServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
         String userRole = session != null ? (String) session.getAttribute("userRole") : null;
-        
+
         System.out.println("MyComplaintsServlet: Session check - Session exists: " + (session != null) + ", UserId: " + userId + ", Role: " + userRole);
-        
+
         if (userId == null) {
             System.out.println("MyComplaintsServlet: No valid session found, redirecting to login");
             resp.sendRedirect(req.getContextPath() + "/login.jsp");
